@@ -15,7 +15,6 @@ final class DefaultOfferImagesRepository {
     
     private let storage: OfferImagesStorage
     private let dataTransferService: DataTransferService
-    private let cacheLock = NSLock()
 
     init(
         dataTransferService: DataTransferService,

@@ -312,7 +312,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "26BBF4A9-E9CD-49C0-948F-E814071B99E1"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "OffersIbotta/Presentation/OffersScene/OffersList/View/Cells/OfferCollectionViewCell.swift"
@@ -338,6 +338,22 @@
             endingLineNumber = "132"
             landmarkName = "OfferDetailsViewController"
             landmarkType = "21">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8C5C27A3-2D5F-4F49-822E-7E71BD1E2AAA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "OffersIbotta/Data/Repositories/OfferImagesRepository.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "40"
+            endingLineNumber = "40"
+            landmarkName = "fetchImage(with:completion:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

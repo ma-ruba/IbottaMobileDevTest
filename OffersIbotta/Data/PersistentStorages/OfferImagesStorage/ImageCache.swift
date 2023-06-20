@@ -15,7 +15,6 @@ protocol OfferImagesStorage {
 }
 
 
-// TODO: Make Cache with 2 internal caches to store decoded and encoded images for efficiency
 final class ImageCache: OfferImagesStorage {
     
     private let cache = NSCache<NSString, UIImage>()

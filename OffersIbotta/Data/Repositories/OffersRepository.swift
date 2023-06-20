@@ -13,8 +13,6 @@ protocol OffersRepository {
 
 final class DefaultOffersRepository {
     
-//    // TODO: Cover cash with protocol and inject in init
-//    private let cache = NSCache<NSNumber, StructWrapper<Offer>>()
     private let dataTransferService: DataTransferService
     
     init(dataTransferService: DataTransferService) {
