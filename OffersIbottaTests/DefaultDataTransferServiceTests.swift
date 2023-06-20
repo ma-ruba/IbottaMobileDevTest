@@ -10,36 +10,41 @@ import XCTest
 
 import XCTest
 
-final class DefaultDataTransferServiceTests: XCTestCase {
-    
-    var dataTransferService: DefaultDataTransferService!
+import XCTest
+
+class DefaultDataTransferServiceTests: XCTestCase {
+
     var networkService: MockNetworkService!
     var errorLogger: MockDataTransferErrorLogger!
+    var dataTransferService: DefaultDataTransferService!
+    
+    let endpoint = Endpoint(path: .fileName("test.json"), responseDecoder: JSONResponseDecoder())
 
     override func setUp() {
         super.setUp()
         networkService = MockNetworkService()
         errorLogger = MockDataTransferErrorLogger()
-        dataTransferService = DefaultDataTransferService(with: networkService, errorLogger: errorLogger)
+        dataTransferService = DefaultDataTransferService(
+            with: networkService,
+            errorLogger: errorLogger
+        )
     }
-    
+
     override func tearDown() {
-        dataTransferService = nil
         networkService = nil
         errorLogger = nil
+        dataTransferService = nil
         super.tearDown()
     }
-    
+
     func testRequest_Success() {
         // Given
-        let expectedResult = TestModel(id: 1, name: "Test")
-        let endpoint = Endpoint(path: .fileName("test.json"), responseDecoder: MockResponseDecoder(result: expectedResult))
-        let responseData = Data()
-        
-        networkService.mockResult = .success(responseData)
-        
+        let expectedResult = TestModel(id: 123, name: "Test")
+        let jsonData = try! JSONEncoder().encode(expectedResult)
+        networkService.mockResult = .success(jsonData)
+
         let expectation = XCTestExpectation(description: "Completion called")
-        
+
         // When
         dataTransferService.request(with: endpoint) { (result: Result<TestModel, DataTransferError>) in
             // Then
@@ -51,20 +56,19 @@ final class DefaultDataTransferServiceTests: XCTestCase {
                 XCTFail("Expected success, got failure")
             }
         }
-        
+
         wait(for: [expectation], timeout: 1.0)
         XCTAssertTrue(networkService.requestCalled)
+        XCTAssertFalse(errorLogger.logCalled)
     }
-    
-    func testRequest_Failure() {
+
+    func testRequest_Failure_NetworkFailure() {
         // Given
-        let endpoint = Endpoint(path: .fileName("test.json"))
-        let error = NetworkError.urlGeneration
-        
+        let error = NetworkError.loading(TestError.test)
         networkService.mockResult = .failure(error)
-        
+
         let expectation = XCTestExpectation(description: "Completion called")
-        
+
         // When
         dataTransferService.request(with: endpoint) { (result: Result<TestModel, DataTransferError>) in
             // Then
@@ -79,55 +83,58 @@ final class DefaultDataTransferServiceTests: XCTestCase {
                 expectation.fulfill()
             }
         }
-        
+
         wait(for: [expectation], timeout: 1.0)
         XCTAssertTrue(networkService.requestCalled)
         XCTAssertTrue(errorLogger.logCalled)
     }
-    
-    // MARK: - Helper Classes
-    
-    enum TestError: Error {
-        case testError
-    }
-    
+
+    // MARK: - Helper
+
     struct TestModel: Codable, Equatable {
         let id: Int
         let name: String
     }
-    
-    class MockNetworkService: NetworkService {
-        var mockResult: Result<Data, NetworkError>?
-        var requestCalled = false
-        
-        func request(path: PathType, completion: @escaping CompletionHandler) {
-            requestCalled = true
-            if let mockResult = mockResult {
-                completion(mockResult)
+
+    enum TestError: Error {
+        case test
+    }
+}
+
+// MARK: - Mock Classes
+
+class MockNetworkService: NetworkService {
+    var requestCalled = false
+    var mockResult: Result<Data?, NetworkError>?
+
+    func request(path: PathType, completion: @escaping CompletionHandler) {
+        requestCalled = true
+        if let result = mockResult {
+            switch result {
+            case .success(let data):
+                if let data {
+                    completion(.success(data))
+                }
+                
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
     }
-    
-    class MockDataTransferErrorLogger: DataTransferErrorLogger {
-        var logCalled = false
-        
-        func log(error: Error) {
-            logCalled = true
-        }
+}
+
+class MockDataTransferErrorLogger: DataTransferErrorLogger {
+    var logCalled = false
+
+    func log(error: Error) {
+        logCalled = true
     }
-    
-    class MockResponseDecoder: ResponseDecoder {
-        var result: Any?
-        
-        init(result: Any? = nil) {
-            self.result = result
-        }
-        
-        func decode<T: Decodable>(_ data: Data) throws -> T {
-            guard let result = result as? T else {
-                throw NSError(domain: "TestError", code: 123, userInfo: nil)
-            }
-            return result
-        }
+}
+
+class JSONResponseDecoder: ResponseDecoder {
+    private let jsonDecoder = JSONDecoder()
+
+    func decode<T: Decodable>(_ data: Data) throws -> T {
+        return try jsonDecoder.decode(T.self, from: data)
     }
 }

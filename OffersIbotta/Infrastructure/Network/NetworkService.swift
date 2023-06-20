@@ -12,8 +12,6 @@ enum NetworkError: Error {
     case urlGeneration
 }
 
-
-
 protocol NetworkService {
     typealias CompletionHandler = (Result<Data, NetworkError>) -> Void
     
