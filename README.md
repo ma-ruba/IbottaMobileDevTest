@@ -1,6 +1,6 @@
-# IbottaMobileDevTest - iOS
+# MobileDevTest - iOS
 
-This project showcases my skills as an iOS Engineer and was developed as part of the application process for the Ibotta company. The project focuses on demonstrating my proficiency in Clean Architecture, utilizing the MVVM design pattern, and showcasing my ability to work with complex data structures and UI components.
+This project showcases my skills as an iOS Engineer and was developed as part of the application process. The project focuses on demonstrating my proficiency in Clean Architecture, utilizing the MVVM design pattern, and showcasing my ability to work with complex data structures and UI components.
 
 # Project Overview
 - Architecture: Clean Architecture
